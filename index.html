@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Extrudix — Professional 3D Print Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --ink:       #0e1117;
+      --ink2:      #161c27;
+      --ink3:      #1e2535;
+      --steel:     #2a3448;
+      --accent:    #3b82f6;
+      --accent-lt: #93c5fd;
+      --gold:      #f59e0b;
+      --gold-lt:   #fde68a;
+      --text:      #e2e8f4;
+      --muted:     #6b7fa3;
+      --border:    rgba(59,130,246,0.15);
+      --border2:   rgba(255,255,255,0.07);
+      --radius:    12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--text);
+      font-family: 'Epilogue', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 {
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(30,37,53,0.9) 0%, transparent 70%);
+      top: -300px; left: -200px;
+    }
+    .orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%);
+      top: 20%; right: -100px;
+    }
+    .orb-3 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(245,158,11,0.04) 0%, transparent 70%);
+      bottom: 10%; left: 10%;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border2);
+      background: rgba(14,17,23,0.85);
+      backdrop-filter: blur(16px);
+    }
+    .nav-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .logo-mark {
+      width: 32px; height: 32px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fff;
+    }
+    .logo-text {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--text);
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    .nav-link {
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: var(--text); }
+    .nav-cta {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--ink);
+      background: var(--accent);
+      padding: 8px 18px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { background: var(--accent-lt); transform: translateY(-1px); }
+
+    .wrap {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      padding: 160px 40px 120px;
+      max-width: 1160px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: rgba(245,158,11,0.08);
+      border: 1px solid rgba(245,158,11,0.2);
+      padding: 5px 14px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.1s forwards;
+    }
+
+    .hero h1 {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: clamp(2.8rem, 4.5vw, 4.2rem);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.25s forwards;
+    }
+    .hero h1 em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--accent-lt);
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 40px;
+      max-width: 420px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.4s forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.55s forwards;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Epilogue', sans-serif;
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 13px 24px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(59,130,246,0.25);
+    }
+    .btn-primary:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(59,130,246,0.35);
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--text);
+      font-family: 'Epilogue', sans-serif;
+      font-weight: 500;
+      font-size: 0.875rem;
+      padding: 13px 24px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border2);
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+    }
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      background: rgba(59,130,246,0.06);
+      transform: translateY(-2px);
+    }
+
+    .hero-right {
+      opacity: 0;
+      animation: fadeLeft 0.9s 0.5s forwards;
+    }
+
+    .stats-panel {
+      background: var(--ink2);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .stats-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .stats-header span {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #22c55e; }
+    .dots { display: flex; gap: 6px; margin-right: 6px; }
+
+    .stats-body { padding: 22px 20px; }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border2);
+    }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-label { font-size: 0.8rem; color: var(--muted); }
+    .stat-value { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 600; color: var(--text); }
+    .stat-value.green { color: #4ade80; }
+    .stat-value.blue  { color: var(--accent-lt); }
+    .stat-value.gold  { color: var(--gold-lt); }
+
+    .mini-bar-wrap { margin-top: 18px; }
+    .mini-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.74rem;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+    .mini-bar-track {
+      height: 5px;
+      background: var(--steel);
+      border-radius: 100px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .mini-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-lt));
+      animation: barGrow 1.5s 1.2s both ease-out;
+    }
+    @keyframes barGrow { from { width: 0 !important; } }
+
+    .trust-bar {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border2);
+      border-bottom: 1px solid var(--border2);
+      background: rgba(22,28,39,0.6);
+      padding: 18px 0;
+    }
+    .trust-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .trust-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .trust-items { display: flex; gap: 32px; flex-wrap: wrap; }
+    .trust-item {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text);
+      opacity: 0.7;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .trust-item::before {
+      content: '✦';
+      color: var(--accent);
+      font-size: 0.6rem;
+    }
+
+    section { position: relative; z-index: 1; }
+
+    .section-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    .section-h {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: clamp(1.9rem, 3vw, 2.8rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .section-h em { font-style: italic; font-weight: 300; color: var(--accent-lt); }
+    .section-p { font-size: 0.95rem; color: var(--muted); line-height: 1.75; max-width: 480px; }
+
+    .who { padding: 100px 0; }
+    .who-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-top: 56px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--border2);
+    }
+    .who-card {
+      background: var(--ink2);
+      padding: 42px 34px;
+      transition: background 0.3s;
+      position: relative;
+    }
+    .who-card:hover { background: var(--ink3); }
+    .who-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 34px; right: 34px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-lt));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .who-card:hover::after { opacity: 1; }
+    .who-icon { font-size: 1.8rem; margin-bottom: 16px; display: block; }
+    .who-card h3 {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+    .who-card p { font-size: 0.855rem; color: var(--muted); line-height: 1.7; }
+    .who-card ul { list-style: none; margin-top: 14px; }
+    .who-card ul li {
+      font-size: 0.81rem;
+      color: var(--muted);
+      padding: 3px 0 3px 16px;
+      position: relative;
+    }
+    .who-card ul li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-size: 0.72rem; }
+
+    .features { padding: 100px 0; }
+    .features-top {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: end;
+      margin-bottom: 56px;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .feat {
+      background: var(--ink2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 30px 26px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .feat:hover { border-color: var(--accent); transform: translateY(-4px); }
+    .feat-num {
+      font-family: 'Fraunces', serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+      opacity: 0.55;
+    }
+    .feat h3 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 0.98rem; margin-bottom: 9px; }
+    .feat p { font-size: 0.83rem; color: var(--muted); line-height: 1.65; }
+
+    .data-section { padding: 100px 0; }
+    .data-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .code-block {
+      background: var(--ink2);
+      border: 1px solid var(--border2);
+      border-radius: 14px;
+      overflow: hidden;
+      font-size: 0.78rem;
+      line-height: 1.85;
+    }
+    .code-title {
+      padding: 11px 18px;
+      border-bottom: 1px solid var(--border2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.02);
+    }
+    .code-title span { font-size: 0.7rem; color: var(--muted); font-weight: 500; }
+    .code-body { padding: 22px; font-family: 'Courier New', monospace; }
+    .c-dir  { color: #93c5fd; }
+    .c-csv  { color: #86efac; }
+    .c-note { color: rgba(148,163,184,0.4); font-style: italic; }
+
+    .data-points { display: flex; flex-direction: column; gap: 22px; margin-top: 36px; }
+    .data-point { display: flex; gap: 14px; align-items: flex-start; }
+    .dp-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.9rem;
+    }
+    .dp-text h4 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 0.9rem; margin-bottom: 3px; }
+    .dp-text p { font-size: 0.825rem; color: var(--muted); line-height: 1.6; }
+
+    .cta-band { padding: 100px 0; }
+    .cta-inner {
+      background: linear-gradient(135deg, var(--ink2) 0%, var(--ink3) 100%);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      padding: 76px 68px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 60px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-inner::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: 100px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-text h2 {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    .cta-text h2 em { font-style: italic; font-weight: 300; color: var(--accent-lt); }
+    .cta-text p { font-size: 0.95rem; color: var(--muted); line-height: 1.7; max-width: 440px; }
+    .cta-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .btn-reddit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #FF4500;
+      color: #fff;
+      font-family: 'Epilogue', sans-serif;
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 13px 28px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(255,69,0,0.2);
+    }
+    .btn-reddit:hover { background: #e03d00; transform: translateY(-2px); box-shadow: 0 8px 32px rgba(255,69,0,0.3); }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border2);
+      padding: 36px 0;
+    }
+    .footer-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .footer-left { display: flex; align-items: center; gap: 20px; }
+    .footer-logo { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1rem; color: var(--text); }
+    .footer-meta { font-size: 0.76rem; color: var(--muted); }
+    .footer-right { font-size: 0.76rem; color: var(--muted); }
+    .footer-right a { color: var(--accent-lt); text-decoration: none; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeLeft {
+      from { opacity: 0; transform: translateX(30px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .reveal {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-d1 { transition-delay: 0.1s; }
+    .reveal-d2 { transition-delay: 0.2s; }
+    .reveal-d3 { transition-delay: 0.3s; }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; gap: 48px; padding: 120px 28px 80px; }
+      .hero-right { animation: fadeUp 0.9s 0.5s forwards; }
+      .who-grid { grid-template-columns: 1fr; }
+      .features-top { grid-template-columns: 1fr; gap: 28px; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .data-inner { grid-template-columns: 1fr; gap: 48px; }
+      .cta-inner { grid-template-columns: 1fr; padding: 48px 32px; }
+      .nav-right .nav-link { display: none; }
+      .wrap { padding: 0 28px; }
+    }
+    @media (max-width: 600px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .trust-items { gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="logo">
+        <div class="logo-mark">E</div>
+        <span class="logo-text">Extrudix</span>
+      </a>
+      <div class="nav-right">
+        <a href="#who" class="nav-link">Who It's For</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#data" class="nav-link">Data</a>
+        <a href="https://reddit.com/r/Extrudix" target="_blank" class="nav-cta">Join Community →</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-tag">⚡ Coming Soon · iOS 17+ & macOS 14+</div>
+      <h1>3D Print Management,<br><em>Built for Serious Operations.</em></h1>
+      <p class="hero-desc">Extrudix gives print farms, product studios, and manufacturers complete visibility over every job, machine, material, and cost — without cloud lock-in or recurring fees.</p>
+      <div class="hero-actions">
+        <a href="https://reddit.com/r/Extrudix" target="_blank" class="btn-primary">Join the Community</a>
+        <a href="#features" class="btn-ghost">Explore Features →</a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="stats-panel">
+        <div class="stats-header">
+          <div class="dots">
+            <div class="dot dot-red"></div>
+            <div class="dot dot-yellow"></div>
+            <div class="dot dot-green"></div>
+          </div>
+          <span>Extrudix — Operations Overview</span>
+        </div>
+        <div class="stats-body">
+          <div class="stat-row">
+            <span class="stat-label">Active Printers</span>
+            <span class="stat-value blue">12</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Jobs This Month</span>
+            <span class="stat-value">348</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Filament Used</span>
+            <span class="stat-value">42.6 kg</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Total Print Cost</span>
+            <span class="stat-value gold">$1,284.50</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Maintenance Due</span>
+            <span class="stat-value green">All Clear ✓</span>
+          </div>
+          <div class="mini-bar-wrap">
+            <div class="mini-bar-label"><span>Filament Stock</span><span>73%</span></div>
+            <div class="mini-bar-track"><div class="mini-bar-fill" style="width:73%"></div></div>
+            <div class="mini-bar-label"><span>Printer Uptime</span><span>91%</span></div>
+            <div class="mini-bar-track"><div class="mini-bar-fill" style="width:91%; animation-delay:1.5s;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="trust-bar">
+    <div class="trust-inner">
+      <span class="trust-label">Built for</span>
+      <div class="trust-items">
+        <span class="trust-item">Print Farms</span>
+        <span class="trust-item">Prototyping Studios</span>
+        <span class="trust-item">Small Manufacturers</span>
+        <span class="trust-item">Solo Makers</span>
+        <span class="trust-item">iOS &amp; macOS Native</span>
+        <span class="trust-item">No Account Required</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="who" id="who">
+    <div class="wrap">
+      <p class="section-eyebrow reveal">Who It's For</p>
+      <h2 class="section-h reveal">The right tool for every<br><em>3D printing operation.</em></h2>
+      <div class="who-grid">
+        <div class="who-card reveal">
+          <span class="who-icon">🏭</span>
+          <h3>Print Farms &amp; Services</h3>
+          <p>Manage multiple machines, track every job across every printer, and stay ahead of maintenance before downtime hits your bottom line.</p>
+          <ul>
+            <li>Multi-printer job tracking</li>
+            <li>Maintenance scheduling &amp; alerts</li>
+            <li>Cost-per-job reporting</li>
+            <li>PDF job summaries for clients</li>
+          </ul>
+        </div>
+        <div class="who-card reveal reveal-d1">
+          <span class="who-icon">🔬</span>
+          <h3>Product Design Studios</h3>
+          <p>Organize prototypes into projects, attach reference files, and track material spend across every iteration — from concept to final part.</p>
+          <ul>
+            <li>Project-based organization</li>
+            <li>Part &amp; BOM tracking</li>
+            <li>Filament cost per project</li>
+            <li>Cover photos &amp; attachments</li>
+          </ul>
+        </div>
+        <div class="who-card reveal reveal-d2">
+          <span class="who-icon">⚙️</span>
+          <h3>Small Manufacturers</h3>
+          <p>Know your true production costs down to the kilowatt-hour. Track labor, overhead, and materials for accurate quoting and smarter pricing.</p>
+          <ul>
+            <li>Time-of-use electricity pricing</li>
+            <li>Labor &amp; overhead tracking</li>
+            <li>12-currency support</li>
+            <li>Business PDF exports</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="wrap">
+      <div class="features-top">
+        <div>
+          <p class="section-eyebrow reveal">Core Features</p>
+          <h2 class="section-h reveal">Everything in one place.<br><em>Nothing in the cloud.</em></h2>
+        </div>
+        <p class="section-p reveal" style="align-self:end;">Six deeply integrated modules covering every aspect of a 3D printing operation — from raw filament to finished invoice.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feat reveal">
+          <div class="feat-num">01</div>
+          <h3>Print Job Log</h3>
+          <p>Detailed records for every print — duration, material, nozzle config, slicing data, photos, and results. Multi-filament and multi-nozzle jobs supported.</p>
+        </div>
+        <div class="feat reveal reveal-d1">
+          <div class="feat-num">02</div>
+          <h3>Filament Inventory</h3>
+          <p>Track every spool by brand, material, color, diameter, and weight remaining. Automatic low-stock visibility so you never get caught short.</p>
+        </div>
+        <div class="feat reveal reveal-d2">
+          <div class="feat-num">03</div>
+          <h3>Printer &amp; Hardware</h3>
+          <p>Full printer profiles with nozzle units, build plates, and hardware records. Built-in printer catalog covers all major brands.</p>
+        </div>
+        <div class="feat reveal">
+          <div class="feat-num">04</div>
+          <h3>Maintenance Scheduling</h3>
+          <p>Set service intervals by hours, days, or print count. Get notified before problems arise and keep a full history of every task.</p>
+        </div>
+        <div class="feat reveal reveal-d1">
+          <div class="feat-num">05</div>
+          <h3>Cost &amp; Analytics</h3>
+          <p>True cost accounting with electricity matrices, labor rates, overhead, and 12-currency support. Export polished PDF reports.</p>
+        </div>
+        <div class="feat reveal reveal-d2">
+          <div class="feat-num">06</div>
+          <h3>Project Management</h3>
+          <p>Group prints into projects with parts lists, cover photos, file attachments, and full cost rollups across every iteration.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="data-section" id="data">
+    <div class="wrap">
+      <div class="data-inner">
+        <div>
+          <p class="section-eyebrow reveal">Data Architecture</p>
+          <h2 class="section-h reveal">Your data.<br><em>Your files. Always.</em></h2>
+          <div class="data-points">
+            <div class="data-point reveal">
+              <div class="dp-icon">📂</div>
+              <div class="dp-text">
+                <h4>Plain CSV Files</h4>
+                <p>All data is stored as human-readable CSV files in a folder you choose. Open them in Excel or Numbers at any time — no export needed.</p>
+              </div>
+            </div>
+            <div class="data-point reveal reveal-d1">
+              <div class="dp-icon">☁️</div>
+              <div class="dp-text">
+                <h4>Your Cloud, Your Choice</h4>
+                <p>Store in iCloud Drive, Google Drive, or fully local. Extrudix servers never touch your data.</p>
+              </div>
+            </div>
+            <div class="data-point reveal reveal-d2">
+              <div class="dp-icon">🔒</div>
+              <div class="dp-text">
+                <h4>No Account Required</h4>
+                <p>Zero sign-up. Zero third-party SDKs. No tracking. A native app that respects your privacy and your team's.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="code-block">
+            <div class="code-title">
+              <div class="dots">
+                <div class="dot dot-red"></div>
+                <div class="dot dot-yellow"></div>
+                <div class="dot dot-green"></div>
+              </div>
+              <span>~/iCloud Drive/Extrudix/</span>
+            </div>
+            <div class="code-body">
+<span class="c-dir">Extrudix/</span>
+├── <span class="c-dir">Filament/</span>
+│   ├── <span class="c-csv">filaments.csv</span>
+│   └── <span class="c-csv">open_spools.csv</span>
+├── <span class="c-dir">Print History/</span>
+│   └── <span class="c-dir">job_2024_001/</span>
+│       ├── <span class="c-csv">job.csv</span>
+│       └── <span class="c-dir">photos/</span>
+├── <span class="c-dir">Printers/</span>
+│   └── <span class="c-dir">Bambu_X1C/</span>
+│       └── <span class="c-csv">maintenance.csv</span>
+├── <span class="c-dir">Projects/</span>
+│   └── <span class="c-dir">Client_Enclosure/</span>
+│       └── <span class="c-csv">project_parts.csv</span>
+└── <span class="c-dir">Settings/</span>
+    └── <span class="c-csv">power_cost_table.csv</span>
+
+<span class="c-note">// No database. No server. Just files.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="wrap">
+      <div class="cta-inner reveal">
+        <div class="cta-text">
+          <h2>Help Shape<br><em>What Gets Built.</em></h2>
+          <p>Extrudix launches soon. Join the community now to share your workflow, influence what gets prioritized, and be first to know when it's live. Whether you run one printer or fifty, your input directly shapes the product.</p>
+        </div>
+        <div class="cta-btns">
+          <a href="https://reddit.com/r/Extrudix" target="_blank" class="btn-reddit">🔴 Join r/Extrudix</a>
+          <a href="#features" class="btn-ghost" style="justify-content:center;">View Features →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-left">
+        <span class="footer-logo">Extrudix</span>
+        <span class="footer-meta">iOS 17+ · macOS 14+ · Built by Taylor</span>
+      </div>
+      <div class="footer-right">
+        <a href="https://reddit.com/r/Extrudix" target="_blank">r/Extrudix</a> &nbsp;·&nbsp; © 2026 Extrudix. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const els = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.08 });
+    els.forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>
