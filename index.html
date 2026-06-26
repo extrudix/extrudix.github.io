@@ -344,7 +344,7 @@
     /* ---- Footer title block ---- */
     footer {
       border-top: 1px solid var(--ink);
-      padding: 0 0 50px;
+      padding: 0;
     }
     .block {
       display: grid;
@@ -367,13 +367,19 @@
       .block div:nth-child(2) { border-right: none; }
     }
     .foot-links {
-      display: flex; flex-wrap: wrap; gap: 22px;
-      padding-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      padding-top: 18px;
+      padding-bottom: 4px;
       color: var(--ink-faint);
     }
-    .foot-links a { text-decoration: none; }
+    .foot-links a { text-decoration: none; padding: 4px 0; }
     .foot-links a:hover { color: var(--accent); }
-    .foot-links .spacer { margin-left: auto; }
+    .foot-copy {
+      padding-top: 14px;
+      padding-bottom: 50px;
+      color: var(--ink-faint);
+    }
 
     @keyframes rise {
       from { opacity: 0; transform: translateY(14px); }
@@ -410,8 +416,8 @@
     .note-body p { margin-left: auto; margin-right: auto; }
 
     .block div { text-align: center; border-right: none; }
-    .foot-links { justify-content: center; }
-    .foot-links .spacer { margin-left: 0; width: 100%; text-align: center; }
+    .foot-links { grid-template-columns: repeat(2, 1fr); }
+    .foot-copy { text-align: center; }
   </style>
 
   <!-- Google tag (gtag.js) -->
@@ -597,8 +603,8 @@
         <a href="/privacy">Privacy</a>
         <a href="/terms">Terms of Use</a>
         <a href="mailto:support@extrudix.com">Contact</a>
-        <span class="spacer">© 2026 Extrudix</span>
       </div>
+      <div class="foot-copy mono">© 2026 Extrudix</div>
     </div>
   </footer>
 
