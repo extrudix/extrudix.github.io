@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support · Extrudix</title>
+  <meta name="description" content="Get help with Extrudix, report a bug, contribute to the catalog, or send feedback directly to the developer." />
+
+  <link rel="icon" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --paper:      #f5f5f7;
+      --surface:    #ffffff;
+      --ink:        #1d1d1f;
+      --ink-soft:   #6e6e73;
+      --ink-faint:  #a0a0a6;
+      --accent:     #0071e3;
+      --accent-deep:#0062c9;
+      --line:       rgba(0, 0, 0, 0.11);
+      --line-soft:  rgba(0, 0, 0, 0.055);
+      --grid:       rgba(0, 0, 0, 0.05);
+      --glow:       rgba(0, 113, 227, 0.07);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper:      #000000;
+        --surface:    #1c1c1e;
+        --ink:        #f5f5f7;
+        --ink-soft:   #a1a1a6;
+        --ink-faint:  #6c6c70;
+        --accent:     #2997ff;
+        --accent-deep:#47a9ff;
+        --line:       rgba(255, 255, 255, 0.13);
+        --line-soft:  rgba(255, 255, 255, 0.06);
+        --grid:       rgba(255, 255, 255, 0.045);
+        --glow:       rgba(41, 151, 255, 0.09);
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Hanken Grotesk', system-ui, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.68;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% -5%, var(--glow) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .mono {
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+    a { color: var(--accent); }
+    a:hover { text-decoration: underline; }
+
+    .titlebar { border-bottom: 1px solid var(--line); }
+    .titlebar-inner {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 16px 0;
+      max-width: 760px; margin: 0 auto; padding-left: 28px; padding-right: 28px;
+    }
+    .brandmark {
+      display: flex; align-items: baseline; gap: 12px;
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 800; font-size: 19px; letter-spacing: -0.02em;
+      text-decoration: none; color: var(--ink);
+    }
+    .brandmark span { color: var(--ink-faint); font-weight: 500; }
+    .back { color: var(--ink-faint); text-decoration: none; }
+    .back:hover { color: var(--accent); text-decoration: none; }
+
+    .head { padding: 64px 0 8px; }
+    .head .meta { color: var(--accent); margin-bottom: 18px; }
+    .head h1 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700; font-size: clamp(34px, 6vw, 54px);
+      letter-spacing: -0.03em; line-height: 1; margin-bottom: 16px;
+    }
+    .head .updated { color: var(--ink-faint); }
+
+    .tldr {
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+      background: var(--surface);
+      padding: 22px 24px;
+      margin: 36px 0 8px;
+    }
+    .tldr p { font-size: 16px; color: var(--ink-soft); font-weight: 300; }
+    .tldr strong { color: var(--ink); font-weight: 600; }
+
+    section { padding: 40px 0 0; }
+    h2 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700; font-size: 22px; letter-spacing: -0.02em;
+      margin-bottom: 14px;
+      display: flex; align-items: baseline; gap: 12px;
+    }
+    h2 .n { color: var(--accent); font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; }
+    p { color: var(--ink-soft); font-weight: 300; margin-bottom: 14px; max-width: 64ch; }
+    p:last-child { margin-bottom: 0; }
+    strong { color: var(--ink); font-weight: 600; }
+    ul { list-style: none; margin: 0 0 14px; padding: 0; max-width: 64ch; }
+    li { color: var(--ink-soft); font-weight: 300; padding: 6px 0 6px 22px; position: relative; }
+    li::before {
+      content: ''; position: absolute; left: 0; top: 15px;
+      width: 7px; height: 1px; background: var(--accent);
+    }
+
+    /* ---- Support cards ---- */
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 8px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+      padding: 22px;
+      text-decoration: none;
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color 0.15s ease, transform 0.12s ease;
+    }
+    .card:hover { border-color: var(--accent); text-decoration: none; transform: translateY(-1px); }
+    .card .card-kicker { color: var(--accent); }
+    .card h3 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 700; font-size: 17px; letter-spacing: -0.01em;
+    }
+    .card p { color: var(--ink-soft); font-size: 14px; margin-bottom: 0; }
+    .card .arrow { margin-top: auto; color: var(--ink-faint); font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+    @media (max-width: 560px) { .cards { grid-template-columns: 1fr; } }
+
+    .actions {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      margin-top: 8px;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-family: inherit; font-size: 15px; font-weight: 600;
+      padding: 13px 24px;
+      text-decoration: none;
+      border-radius: 4px;
+      border: 1px solid var(--ink);
+      transition: transform 0.12s ease, background 0.15s ease, color 0.15s ease;
+      color: var(--ink);
+    }
+    .btn svg { width: 17px; height: 17px; }
+    .btn-fill { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .btn-fill:hover { background: var(--accent); border-color: var(--accent); color: #fff; text-decoration: none; }
+    .btn-line { background: transparent; color: var(--ink); }
+    .btn-line:hover { background: var(--ink); color: var(--paper); text-decoration: none; }
+
+    /* ---- Solo dev note (matches homepage "Who built it") ---- */
+    .note {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+      padding: 26px 24px;
+      margin-top: 8px;
+    }
+    .note p { margin-bottom: 12px; }
+    .note p:last-child { margin-bottom: 0; }
+    .sign { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; color: var(--ink); }
+
+    /* ---- FAQ ---- */
+    .faq-item { margin-bottom: 22px; }
+    .faq-item:last-child { margin-bottom: 0; }
+    .faq-item h3 {
+      font-family: 'Bricolage Grotesque', sans-serif;
+      font-weight: 600; font-size: 16px; margin-bottom: 6px; color: var(--ink);
+    }
+    .faq-item p { margin-bottom: 0; }
+
+    footer {
+      margin-top: 72px;
+      border-top: 1px solid var(--ink);
+      padding: 22px 0 56px;
+    }
+    .foot {
+      display: flex; flex-wrap: wrap; gap: 22px; align-items: center;
+      color: var(--ink-faint);
+    }
+    .foot a { text-decoration: none; }
+    .foot .spacer { margin-left: auto; }
+
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+</head>
+
+<body>
+
+  <div class="titlebar">
+    <div class="titlebar-inner">
+      <a class="brandmark" href="/">Extrudix <span class="mono">Support</span></a>
+      <a class="back mono" href="/">&larr; Back</a>
+    </div>
+  </div>
+
+  <main class="wrap">
+
+    <div class="head">
+      <p class="meta mono">Support</p>
+      <h1>Get help, or help make it better.</h1>
+      <p class="updated mono">Usually a reply within a few days</p>
+    </div>
+
+    <div class="tldr">
+      <p><strong>Short version:</strong> Extrudix is built and supported by one person. Email <a href="mailto:support@extrudix.com">support@extrudix.com</a> for anything, or use one of the forms below to report a bug, send feedback, contribute catalog data, or share whatever else is on your mind. Every message gets read.</p>
+    </div>
+
+    <section>
+      <h2><span class="n">01</span> Reach out</h2>
+      <p>Pick whichever fits best. None of these require an account, and none of them are monitored by anyone but the developer.</p>
+
+      <div class="cards">
+        <a class="card" href="mailto:support@extrudix.com">
+          <span class="card-kicker mono">Email</span>
+          <h3>support@extrudix.com</h3>
+          <p>Best for anything specific: a bug with details, a question about your data, or a direct reply you actually want back.</p>
+          <span class="arrow">&rarr; Open mail app</span>
+        </a>
+
+        <a class="card" href="https://forms.gle/CRd8HyjB9fSdYQeMA" target="_blank" rel="noopener">
+          <span class="card-kicker mono">Feedback form</span>
+          <h3>Bugs &amp; feedback</h3>
+          <p>Something broken, something that could be better, or a feature idea. Anonymous by default, add your email if you want a reply.</p>
+          <span class="arrow">&rarr; Open form</span>
+        </a>
+
+        <a class="card" href="https://forms.gle/24B4dm6EJQF8D5A77" target="_blank" rel="noopener">
+          <span class="card-kicker mono">Catalog form</span>
+          <h3>Contribute catalog data</h3>
+          <p>Have filament, part, or printer data Extrudix doesn't have yet? Send it in and it can be added to the shared catalog.</p>
+          <span class="arrow">&rarr; Open form</span>
+        </a>
+
+        <a class="card" href="https://forms.gle/nHQrzDAeZXhbcLPJ7" target="_blank" rel="noopener">
+          <span class="card-kicker mono">Get involved</span>
+          <h3>Other feedback</h3>
+          <p>Beta testing, a feature request that doesn't fit elsewhere, or just want to say what's working. This is that catch-all.</p>
+          <span class="arrow">&rarr; Open form</span>
+        </a>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="n">02</span> Who's reading this</h2>
+      <div class="note">
+        <p>Extrudix is built by one person, not a team, not a company with a support queue. I wanted a 3D printing tracker that actually fit how I work, couldn't find one, so I built it myself. It started as a personal tool, and it's grown from there.</p>
+        <p>That means every bug report, every piece of feedback, and every catalog contribution goes straight to the person who wrote the code, not a ticketing system. I read all of it, and I use it to decide what gets fixed and built next. If something's broken or missing, telling me is the single most useful thing you can do.</p>
+        <p>I can't promise instant replies or that every request gets built, but I do read everything and genuinely care about making this more useful for the people using it. <span class="sign">Thanks for being here. Taylor</span></p>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="n">03</span> Common questions</h2>
+
+      <div class="faq-item">
+        <h3>Where is my data actually stored?</h3>
+        <p>In plain CSV and JSON files inside a folder you choose on your device, or in iCloud Drive or Google Drive if you point Extrudix there. There's no account and no server, so nothing is stored anywhere we control.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How do I move to a new device?</h3>
+        <p>Point the new device's working folder at the same iCloud Drive or Google Drive folder your other device uses, and everything syncs automatically. If you're on local storage only, use Export / Share Data in Settings to move your files over manually.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What does Demo Mode do?</h3>
+        <p>It loads a full sample dataset into a temporary folder so you can try every feature without entering your own data first. Turning it off instantly restores your real data untouched, and demo data also expires automatically after a day.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>I found a bug. What should I include?</h3>
+        <p>What you were doing, what you expected to happen, and what happened instead. A screenshot helps a lot. The more specific, the faster it can actually get fixed.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Can I request a feature?</h3>
+        <p>Yes, that's exactly what the feedback and "get involved" forms above are for. Not every request makes it in, but all of them get read and considered.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2><span class="n">04</span> Community</h2>
+      <p>For public discussion, other users' tips, and behind-the-scenes updates, join the community rather than emailing support directly.</p>
+      <div class="actions">
+        <a class="btn btn-line" href="https://www.reddit.com/r/Extrudix/" target="_blank" rel="noopener">r/Extrudix</a>
+        <a class="btn btn-line" href="https://www.facebook.com/extrudix" target="_blank" rel="noopener">Facebook</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="foot mono">
+        <a href="/">Home</a>
+        <a href="https://www.reddit.com/r/Extrudix/" target="_blank" rel="noopener">Reddit</a>
+        <a href="https://www.facebook.com/extrudix" target="_blank" rel="noopener">Facebook</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms of Use</a>
+        <a href="mailto:support@extrudix.com">Contact</a>
+        <span class="spacer">© 2026 Extrudix</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
